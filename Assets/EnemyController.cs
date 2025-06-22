@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    [Header("Параметры врага")]
+    [Header("Параметри ворога")]
     public float maxHealth = 100f;
     public float currentHealth;
     public float damage = 10f;
@@ -12,9 +12,9 @@ public class EnemyController : MonoBehaviour
     public float chaseRange = 1000f;
     public float attackRange = 2f;
 
-    [Header("Игрок")]
+    [Header("Гравець")]
     public Transform player;
-    private PlayerHealth playerHealth;
+    // private PlayerHealth playerHealth;
 
     private Animator animator;
     private NavMeshAgent agent;
@@ -35,7 +35,7 @@ public class EnemyController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
 
-        playerHealth = player.GetComponent<PlayerHealth>();
+        // playerHealth = player.GetComponent<PlayerHealth>();
     }
 
     void Update()
@@ -63,14 +63,14 @@ public class EnemyController : MonoBehaviour
         agent.isStopped = false;
         agent.SetDestination(player.position);
 
-        animator.Play("Action"); 
+        animator.Play("SkeletonRigg|Action"); 
         isAttacking = false;
     }
 
     void Idle()
     {
         agent.isStopped = true;
-        animator.Play("Idle Skel"); 
+        animator.Play("SkeletonRigg|Idle Skel"); 
         isAttacking = false;
     }
 
@@ -80,19 +80,18 @@ public class EnemyController : MonoBehaviour
 
         if (!isAttacking)
         {
-            animator.Play("Skel Attack");
+            animator.Play("SkeletonRigg|Skel Attack");
             isAttacking = true;
         }
 
-        // Атака по кулдауну
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             lastAttackTime = Time.time;
 
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-            }
+            // if (playerHealth != null)
+            // {
+            //     playerHealth.TakeDamage(damage);
+            // }
         }
     }
 
@@ -101,7 +100,7 @@ public class EnemyController : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= amount;
-        animator.Play("Skel Dmg"); 
+        animator.Play("SkeletonRigg|Skel Dmg"); 
         if (currentHealth <= 0f)
         {
             Die();
