@@ -14,9 +14,9 @@ public class EnemyController : MonoBehaviour
 
     [Header("Гравець")]
     public Transform player;
-    // private PlayerHealth playerHealth;
+    private PlayerHealth playerHealth;
 
-    private Animator animator;
+    public Animator animator;
     private NavMeshAgent agent;
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
@@ -26,6 +26,7 @@ public class EnemyController : MonoBehaviour
     {
         currentHealth = maxHealth;
 
+        // animator = transform.GetChild(0).GetComponent<Animator>();
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = moveSpeed;
@@ -35,7 +36,7 @@ public class EnemyController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
 
-        // playerHealth = player.GetComponent<PlayerHealth>();
+        playerHealth = player.GetComponent<PlayerHealth>();
     }
 
     void Update()
@@ -47,14 +48,17 @@ public class EnemyController : MonoBehaviour
         if (distance <= attackRange)
         {
             Attack();
+            //Debug.Log("Attack");
         }
         else if (distance <= chaseRange)
         {
             ChasePlayer();
+            //Debug.Log("ChasePlayer");
         }
         else
         {
             Idle();
+            //Debug.Log("Idle");
         }
     }
 
@@ -63,14 +67,17 @@ public class EnemyController : MonoBehaviour
         agent.isStopped = false;
         agent.SetDestination(player.position);
 
-        animator.Play("SkeletonRigg|Action"); 
+        animator.Play("Walk"); 
+        animator.SetTrigger("Walk"); 
         isAttacking = false;
     }
 
     void Idle()
     {
         agent.isStopped = true;
-        animator.Play("SkeletonRigg|Idle Skel"); 
+        // animator.Play("Idle"); 
+        // animator.SetTrigger("Idle"); 
+
         isAttacking = false;
     }
 
@@ -80,7 +87,9 @@ public class EnemyController : MonoBehaviour
 
         if (!isAttacking)
         {
-            animator.Play("SkeletonRigg|Skel Attack");
+            animator.Play("Attack2");
+        animator.SetTrigger("Attack"); 
+
             isAttacking = true;
         }
 
@@ -88,19 +97,21 @@ public class EnemyController : MonoBehaviour
         {
             lastAttackTime = Time.time;
 
-            // if (playerHealth != null)
-            // {
-            //     playerHealth.TakeDamage(damage);
-            // }
+            if (playerHealth != null)
+             {
+                playerHealth.TakeDamage(damage);
+             }
         }
     }
 
-    public void TakeDamage(float amount)
+    void TakeDamage(float amount)
     {
         if (isDead) return;
 
         currentHealth -= amount;
-        animator.Play("SkeletonRigg|Skel Dmg"); 
+        animator.Play("Stun");
+        animator.SetTrigger("Stun"); 
+
         if (currentHealth <= 0f)
         {
             Die();
@@ -111,7 +122,9 @@ public class EnemyController : MonoBehaviour
     {
         isDead = true;
         agent.isStopped = true;
-        animator.Play("Death"); 
+        animator.Play("Death");
+        animator.SetTrigger("Death"); 
+
         Destroy(gameObject, 3f); 
     }
 }

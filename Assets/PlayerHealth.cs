@@ -1,25 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public int maxHealth = 100;
+    private int currentHealth;
+
     void Start()
     {
-        
+        currentHealth = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter(Collider other)
     {
-        
+        if (other.CompareTag("Enemy"))
+        {
+            TakeDamage(10); // Урон от врага
+        }
     }
-      public void TakeDamage(float amount)
+
+    void TakeDamage(int amount)
     {
+        currentHealth -= amount;
+        Debug.Log("Игрок получил урон. Текущее здоровье: " + currentHealth);
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     void Die()
     {
+        Debug.Log("Игрок погиб. Перезагрузка сцены...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
